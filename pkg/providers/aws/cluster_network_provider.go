@@ -45,6 +45,7 @@ import (
 	"github.com/integr8ly/cloud-resource-operator/pkg/resources"
 	"github.com/sirupsen/logrus"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	apiv1 "github.com/openshift/api/v1"
 
 	errorUtil "github.com/pkg/errors"
 )
@@ -1556,6 +1557,12 @@ func (n *NetworkProvider) getNonOverlappingDefaultCIDR(ctx context.Context) (*ne
 	if err != nil {
 		return nil, errorUtil.Wrap(err, "error parsing cluster cidr block")
 	}
+	networkConfigMap := &apiv1.Network
+	err = n.Client.Get(ctx, client.ObjectKey{Name:"cluster", },networkConfigMap)
+	if err != nil{
+		return nil, errorUtil.Wrap(err, "failed to get network cr")
+	}
+
 
 	// this map is used to loop through the available options for a vpc cidr range in aws
 	// See aws docs https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html#vpc-sizing-ipv4
